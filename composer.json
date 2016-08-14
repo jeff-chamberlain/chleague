@@ -1,6 +1,19 @@
 {
+    "config": {
+        "vendor-dir": "app/vendor"
+    },
     "require": {
         "slim/slim": "^3.5",
-        "monolog/monolog": "^1.20"
+        "monolog/monolog": "^1.21",
+        "hayageek/oauth2-yahoo": "^2.0",
+        "fxp/composer-asset-plugin": "^1.2",
+        "npm-asset/angular-material": "^1.0",
+        "illuminate/database": "~5.1",
+        "npm-asset/angular": "^1.5"
+    },
+    "extra": {
+      "asset-installer-paths": {
+	"npm-asset-library": "public/vendor"
+      }
     }
 }

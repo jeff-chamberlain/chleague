@@ -2,45 +2,77 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-require '../vendor/autoload.php';
+require '../app/vendor/autoload.php';
+session_start();
 
 spl_autoload_register(function ($classname) {
-    require ("../classes/" . $classname . ".php");
+    require ("../app/classes/" . $classname . ".php");
 });
 
-$config['displayErrorDetails'] = true;
-$config['addContentLengthHeader'] = false;
 
-$config['db']['host']   = "localhost";
-$config['db']['user']   = "user";
-$config['db']['pass']   = "password";
-$config['db']['dbname'] = "exampleapp";
+$settings = include('../app/config/settings.php');
+$app = new \Slim\App($settings);
 
-$app = new \Slim\App(["settings" => $config]);
+require '../app/lib/dependencies.php';
 
-$container = $app->getContainer();
+$app->get('/login', function (Request $request, Response $response) {
+    $params = $request->getQueryParams();
+    if (!empty($params['error'])) {
 
-$container['logger'] = function($c) {
-    $logger = new \Monolog\Logger('my_logger');
-    $file_handler = new \Monolog\Handler\StreamHandler("../logs/app.log");
-    $logger->pushHandler($file_handler);
-    return $logger;
-};
+	    // Got an error, probably user denied access
+	    $this->logger->addInfo('Got error: ' . $_GET['error']);
 
-$container['db'] = function ($c) {
-    $db = $c['settings']['db'];
-    $pdo = new PDO("mysql:host=" . $db['host'] . ";dbname=" . $db['dbname'],
-        $db['user'], $db['pass']);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    return $pdo;
-};
+	} elseif (empty($params['code'])) {
 
-$app->get('/hello/{name}', function (Request $request, Response $response) {
-    $name = $request->getAttribute('name');
-    $response->getBody()->write("Hello, $name");
+	    $this->logger->addInfo('No code found');
 
-    return $response;
+	} elseif (empty($params['state']) || ($params['state'] !== $_SESSION['oauth2state'])) {
+
+		$this->logger->addInfo('States do not match. Remote: ' . $params['state'] . ' Session: ' . $_SESSION['oauth2state']);
+	    // State is invalid, possible CSRF attack in progress
+	    unset($_SESSION['oauth2state']);
+	    unset($_SESSION['yid']);
+
+	} else {
+
+	    // Try to get an access token (using the authorization code grant)
+	    $token = $this->provider->getAccessToken('authorization_code', [
+	        'code' => $params['code']
+	    ]);
+
+	    // Optional: Now you have a token you can look up a users profile data
+	    try {
+
+	        // We got an access token, let's now get the owner details
+	        $ownerDetails = $this->provider->getResourceOwner($token);
+
+	        //Use these details to create a new profile
+	        $_SESSION['yid'] = $ownerDetails->getId();
+	    } catch (Exception $e) {
+
+	        // Failed to get user details
+	        exit('Something went wrong: ' . $e->getMessage());
+
+	    }
+
+
+	    // // Use this to interact with an API on the users behalf
+	    // echo "Token: ". $token->getToken()."<br>";
+
+	    // // Use this to get a new access token if the old one expires
+	    // echo  "Refresh Token: ".$token->getRefreshToken()."<br>";
+
+	    // // Number of seconds until the access token will expire, and need refreshing
+	    // echo "Expires:" .$token->getExpires()."<br>";
+
+	}
+
+    return $response->withHeader('Location', $this->router->pathFor('home'));
 });
+
+$app->any('/', function (Request $request, Response $response) {
+	$newStream = new \GuzzleHttp\Psr7\LazyOpenStream('html/home.html', 'r');
+	return $response->withBody($newStream);;
+})->setName('home');
 
 $app->run();
