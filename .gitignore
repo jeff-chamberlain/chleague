@@ -3,3 +3,4 @@ app/vendor
 public/vendor
 *.ini
 *.log
+.phpintel*

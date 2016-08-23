@@ -36,17 +36,30 @@ class UserController
         return \User::find($yid);
     }
 
-    public function updateUserToken ( $yid, $token, $refreshToken, $expiration )
+    public function updateUser ( $yid, $token, $info )
     {
-        $user = \User::firstOrNew(['yid' => $yid]);
-        $user->access_token = $token;
-        $user->refresh_token = $refreshToken;
-        $user->token_expiration = $expiration;
-        $user->save();
-    }
-
-    public function updateUserInfo ( $yid, $team_key, $team_name, $team_logo )
-    {
-
+        $this->logger->addInfo("creating..." . $yid);
+        try {
+            $user = $this->getUser($yid);
+            if ( is_null($user) )
+            {
+                $user = new \User;
+            }
+            $this->logger->addInfo("created");
+            $user->yid = $yid;
+            $user->access_token = $token->getToken();
+            $user->refresh_token = $token->getRefreshToken();
+            $user->token_expiration = $token->getExpires();
+            $user->team_key = $info['team_key'];
+            $user->team_name = $info['team_name'];
+            $user->team_logo = $info['team_logo'];
+            $this->logger->addInfo("saving...");
+            $user->save();
+        }
+        catch(Exception $e){
+           // do task when error
+            $this->logger->addError($e->getMessage());
+            echo $e->getMessage();   // insert query
+        }
     }
 }

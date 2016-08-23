@@ -43,14 +43,18 @@
           md-component-id="left"
           md-whiteframe="4">
         <md-content layout-padding>
-          <md-list ng-controller="ListCtrl" ng-cloak>
-            <md-list-item class="secondary-button-padding" ng-click="doPrimaryAction($event)">
+          <md-list ng-cloak>
+            <md-list-item class="secondary-button-padding" go-click="/logout">
               <p>LOGOUT</p>
             </md-list-item>
           </md-list>
         </md-content>
       </md-sidenav>
     </section>
+
+    <md-button class="md-raised" go-click="/login">
+      LOGIN
+    </md-button>
 
 
     <script src="../vendor/angular/angular.js"></script>

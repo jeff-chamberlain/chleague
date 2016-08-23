@@ -1,16 +1,5 @@
 <?php
 
-$app->add(function ($request, $response, $next) {
-    $response = $next($request, $response);
-    if(empty($_SESSION['yid']))
-    {
-        $authurl = $this->provider->getAuthorizationUrl();
-        $_SESSION['oauth2state'] = $this->provider->getState();
-        return $response->withHeader('Location', $authurl);
-    }   
-    return $response;
-});
-
 $container = $app->getContainer();
 
 $container['provider'] = function($c) {
@@ -29,12 +18,16 @@ $container['logger'] = function($c) {
 };
 
 $container['users'] = function ($container) {
-    $users = new \UserController( $container->logger );
+    $users = new \UserController( $container->get('logger') );
     return $users;
 };
 
 $container['yahoo'] = function ($container)
 {
-    $yahoo = new \YahooController ( $container->logger, $container->provider );
+    $yahoo = new \YahooController (
+        $container->get('logger'),
+        $container->get('provider'),
+        $container->get('settings')['config']['league']
+    );
     return $yahoo;
 };

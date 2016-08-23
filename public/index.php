@@ -49,23 +49,25 @@ $app->get('/authcallback', function (Request $request, Response $response) {
 
 	        // We got an access token, let's now get the owner details
 	        $ownerDetails = $this->provider->getResourceOwner($token);
+	        $userInfo = $this->yahoo->getUserInfo($token->getToken());
+	        print_r($userInfo);
+	        $this->logger->addInfo('So far');
 
-	        $this->users->updateUserToken(
+	        $this->users->updateUser(
 	        	$ownerDetails->getId(),
-	        	$token->getToken(),
-	        	$token->getRefreshToken(),
-	        	$token->getExpires()
+	        	$token,
+	        	$userInfo
 	        );
+
+	        $this->logger->addInfo('Updated');
 
 	        //Use these details to create a new profile
 	        $_SESSION['yid'] = $ownerDetails->getId();
 
-	        $this->logger->addInfo(print_r($this->yahoo->getUserInfo($token), true));
-
 	    } catch (Exception $e) {
 
 	        // Failed to get user details
-	        exit('Something went wrong: ' . $e->getMessage());
+	        exit('Something went wrong');
 	    }
 	}
 
@@ -77,13 +79,50 @@ $app->any('/', function (Request $request, Response $response) {
 	return $response->withBody($newStream);
 })->setName('home');
 
-$app->any('/logout', function (Request $request, Response $response) {
+$app->get('/login', function (Request $request, Response $response) {
+	$authurl = $this->provider->getAuthorizationUrl();
+    $_SESSION['oauth2state'] = $this->provider->getState();
+    return $response->withHeader('Location', $authurl);
+});
+
+$app->get('/logout', function (Request $request, Response $response) {
 	unset($_SESSION['yid']);
 	return $response->withHeader('Location', $this->router->pathFor('home'));
 });
 
-$app->get('/user', function (Request $request, Response $response) {
+$app->group('/data', function() use ($app) {
+	$app->get('/user', '\RestfulDataController:user');
+})->add(function ($request, $response, $next)
+{
+	$loggedOutResponse = $response->withJson(array("loggedin" => false));
 
+	if(empty($_SESSION['yid']))
+    {
+    	return $loggedOutResponse;
+    }
+
+    $user = $this->users->getUser($_SESSION['yid']);
+    if(is_null($user))
+    {
+    	return $loggedOutResponse;
+    }
+
+    $token = $user->access_token;
+    $this->logger->addInfo('Remaining time until token expires: ' . time() - $user->token_expiration);
+    if(time() > $user->token_expiration)
+    {
+    	$token = $this->provider->getAccessToken('refresh_token', [
+    		"refresh_token" => $user->refresh_token	
+		]);
+    }
+
+    if(!isset($token))
+    {
+    	return $loggedOutResponse;
+    }
+
+    $request = $request->withAttribute('token', $token);
+    return $next($request, $response);
 });
 
 $app->run();
