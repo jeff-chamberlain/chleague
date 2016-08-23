@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <title>Chamberlain League</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png" />
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+    <link rel="stylesheet" href="../vendor/angular-material/angular-material.css"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/style.css"/>
+
+    <style type="text/css">
+        /**
+         * Hide when Angular is not yet loaded and initialized
+         */
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+          display: none !important;
+        }
+    </style>
+
+  </head>
+
+  <body ng-app="leagueApp" ng-controller="AppCtrl" ng-cloak>
+    <md-toolbar class="md-hue-2">
+      <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" aria-label="Settings" ng-click="toggleLeft()">
+          <md-icon>menu</md-icon>
+        </md-button>
+        <h2>
+          <span>Chamberlain League</span>
+        </h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <section layout="row" flex>
+      <md-sidenav
+          class="md-sidenav-left"
+          md-component-id="left"
+          md-whiteframe="4">
+        <md-content layout-padding>
+          <md-list ng-controller="ListCtrl" ng-cloak>
+            <md-list-item class="secondary-button-padding" ng-click="doPrimaryAction($event)">
+              <p>LOGOUT</p>
+            </md-list-item>
+          </md-list>
+        </md-content>
+      </md-sidenav>
+    </section>
+
+
+    <script src="../vendor/angular/angular.js"></script>
+    <script src="../vendor/angular-animate/angular-animate.js"></script>
+    <script src="../vendor/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="../vendor/angular-material/angular-material.js"></script>
+
+    <script type="text/javascript" src="../scripts/app.js"></script>
+
+  </body>
+</html>

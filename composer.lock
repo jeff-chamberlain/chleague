@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ab751144e300d35fd1ef010e180c2f40",
-    "content-hash": "1000386a8d2cfd1afe8089155515308b",
+    "hash": "6c1ade08afaaa7b7e531d71fc74f25b8",
+    "content-hash": "ed8c82c915a9ee517a34dcc99d832802",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -944,6 +944,93 @@
             "description": "HTML enhanced for web apps",
             "homepage": "http://angularjs.org",
             "keywords": [
+                "angular",
+                "browser",
+                "client-side",
+                "framework"
+            ]
+        },
+        {
+            "name": "npm-asset/angular-animate",
+            "version": "1.5.8",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.5.8.tgz",
+                "reference": null,
+                "shasum": "535f7369225aba7fb15bf7134c71b15bc635c586"
+            },
+            "type": "npm-asset-library",
+            "extra": {
+                "npm-asset-bugs": {
+                    "url": "https://github.com/angular/angular.js/issues"
+                },
+                "npm-asset-main": "index.js",
+                "npm-asset-directories": [],
+                "npm-asset-repository": {
+                    "type": "git",
+                    "url": "git+https://github.com/angular/angular.js.git"
+                },
+                "npm-asset-scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Angular Core Team",
+                    "email": "angular-core+npm@google.com"
+                }
+            ],
+            "description": "AngularJS module for animations",
+            "homepage": "http://angularjs.org",
+            "keywords": [
+                "angular",
+                "animation",
+                "browser",
+                "client-side",
+                "framework"
+            ]
+        },
+        {
+            "name": "npm-asset/angular-aria",
+            "version": "1.5.8",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/angular-aria/-/angular-aria-1.5.8.tgz",
+                "reference": null,
+                "shasum": "558fa07dc82c6fa57b1438e660bbdcfcb805a2f5"
+            },
+            "type": "npm-asset-library",
+            "extra": {
+                "npm-asset-bugs": {
+                    "url": "https://github.com/angular/angular.js/issues"
+                },
+                "npm-asset-main": "index.js",
+                "npm-asset-directories": [],
+                "npm-asset-repository": {
+                    "type": "git",
+                    "url": "git+https://github.com/angular/angular.js.git"
+                },
+                "npm-asset-scripts": {
+                    "test": "echo \"Error: no test specified\" && exit 1"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Angular Core Team",
+                    "email": "angular-core+npm@google.com"
+                }
+            ],
+            "description": "AngularJS module for making accessibility easy",
+            "homepage": "http://angularjs.org",
+            "keywords": [
+                "a11y",
+                "accessibility",
                 "angular",
                 "browser",
                 "client-side",

@@ -14,14 +14,9 @@ return [
             'username' => $appconfig['db']['db_user'],
             'password' => $appconfig['db']['db_password'],
             'charset'   => 'utf8',
-            'collation' => 'utf8_unicode_ci',
+            'collation' => 'utf8_general_ci',
             'prefix'    => '',
         ],
-        // 'logger' => [
-        //     'name' => 'slim-app',
-        //     'level' => Monolog\Logger::DEBUG,
-        //     'path' => __DIR__ . '../app/logs/app.log',
-        // ],
         'config' => $appconfig,
     ],
 ];

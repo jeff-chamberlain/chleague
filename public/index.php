@@ -13,9 +13,14 @@ spl_autoload_register(function ($classname) {
 $settings = include('../app/config/settings.php');
 $app = new \Slim\App($settings);
 
+$capsule = new \Illuminate\Database\Capsule\Manager;
+$capsule->addConnection($settings['settings']['db']);
+$capsule->setAsGlobal();
+$capsule->bootEloquent();
+
 require '../app/lib/dependencies.php';
 
-$app->get('/login', function (Request $request, Response $response) {
+$app->get('/authcallback', function (Request $request, Response $response) {
     $params = $request->getQueryParams();
     if (!empty($params['error'])) {
 
@@ -35,36 +40,33 @@ $app->get('/login', function (Request $request, Response $response) {
 
 	} else {
 
-	    // Try to get an access token (using the authorization code grant)
-	    $token = $this->provider->getAccessToken('authorization_code', [
-	        'code' => $params['code']
-	    ]);
-
-	    // Optional: Now you have a token you can look up a users profile data
 	    try {
+
+		    // Try to get an access token (using the authorization code grant)
+		    $token = $this->provider->getAccessToken('authorization_code', [
+		        'code' => $params['code']
+		    ]);
 
 	        // We got an access token, let's now get the owner details
 	        $ownerDetails = $this->provider->getResourceOwner($token);
 
+	        $this->users->updateUserToken(
+	        	$ownerDetails->getId(),
+	        	$token->getToken(),
+	        	$token->getRefreshToken(),
+	        	$token->getExpires()
+	        );
+
 	        //Use these details to create a new profile
 	        $_SESSION['yid'] = $ownerDetails->getId();
+
+	        $this->logger->addInfo(print_r($this->yahoo->getUserInfo($token), true));
+
 	    } catch (Exception $e) {
 
 	        // Failed to get user details
 	        exit('Something went wrong: ' . $e->getMessage());
-
 	    }
-
-
-	    // // Use this to interact with an API on the users behalf
-	    // echo "Token: ". $token->getToken()."<br>";
-
-	    // // Use this to get a new access token if the old one expires
-	    // echo  "Refresh Token: ".$token->getRefreshToken()."<br>";
-
-	    // // Number of seconds until the access token will expire, and need refreshing
-	    // echo "Expires:" .$token->getExpires()."<br>";
-
 	}
 
     return $response->withHeader('Location', $this->router->pathFor('home'));
@@ -72,7 +74,16 @@ $app->get('/login', function (Request $request, Response $response) {
 
 $app->any('/', function (Request $request, Response $response) {
 	$newStream = new \GuzzleHttp\Psr7\LazyOpenStream('html/home.html', 'r');
-	return $response->withBody($newStream);;
+	return $response->withBody($newStream);
 })->setName('home');
+
+$app->any('/logout', function (Request $request, Response $response) {
+	unset($_SESSION['yid']);
+	return $response->withHeader('Location', $this->router->pathFor('home'));
+});
+
+$app->get('/user', function (Request $request, Response $response) {
+
+});
 
 $app->run();

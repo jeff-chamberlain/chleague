@@ -6,9 +6,8 @@ $app->add(function ($request, $response, $next) {
     {
         $authurl = $this->provider->getAuthorizationUrl();
         $_SESSION['oauth2state'] = $this->provider->getState();
-        $this->logger->addInfo('Sent State: ' . $_SESSION['oauth2state']);
         return $response->withHeader('Location', $authurl);
-    }
+    }   
     return $response;
 });
 
@@ -24,27 +23,18 @@ $container['provider'] = function($c) {
 
 $container['logger'] = function($c) {
     $logger = new \Monolog\Logger('my_logger');
-    $file_handler = new \Monolog\Handler\StreamHandler("../logs/app.log");
+    $file_handler = new \Monolog\Handler\StreamHandler("../../logs/app.log");
     $logger->pushHandler($file_handler);
     return $logger;
 };
 
-// $container['db'] = function ($c) {
-//     $db = $c['settings']['db'];
-//     $pdo = new PDO("mysql:host=" . $db['host'] . ";dbname=" . $db['dbname'],
-//         $db['user'], $db['pass']);
-//     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-//     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-//     return $pdo;
-// };
+$container['users'] = function ($container) {
+    $users = new \UserController( $container->logger );
+    return $users;
+};
 
-// Service factory for the ORM
-$container['db'] = function ($container) {
-    $capsule = new \Illuminate\Database\Capsule\Manager;
-    $capsule->addConnection($container['settings']['db']);
-
-    $capsule->setAsGlobal();
-    $capsule->bootEloquent();
-
-    return $capsule;
+$container['yahoo'] = function ($container)
+{
+    $yahoo = new \YahooController ( $container->logger, $container->provider );
+    return $yahoo;
 };
