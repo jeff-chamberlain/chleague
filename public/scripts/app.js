@@ -5,6 +5,8 @@ angular.module('leagueApp', ['ngMaterial'])
 			.accentPalette('teal');
 	})
 	.controller('AppCtrl', function($scope, $timeout, $mdSidenav , $http) {
+		$scope.activated = false;
+
 		$scope.toggleLeft = function() {
 			$mdSidenav('left').toggle();
 		};
@@ -12,9 +14,22 @@ angular.module('leagueApp', ['ngMaterial'])
 		$http.get('/data/user').then(function successCallback(response)
 		{
 			console.log('SUCCESS', response);
-		}, function errorCallback (reseponse)
+			$scope.user = response.data;
+		}, function errorCallback (response)
 		{
 			console.log('ERROR', response);
+		}).then( function () {
+			return $http.get('/data/game').then(function successCallback(response)
+			{
+				console.log('SUCCESS', response);
+				$scope.game = response.data;
+			}, function errorCallback (response)
+			{
+				console.log('ERROR', response);
+			})
+		}).then( function () {
+			console.log('ACTIVATED', $scope );
+			$scope.activated = true;
 		});
 	})
 	.directive( 'goClick', function ( $window ) {

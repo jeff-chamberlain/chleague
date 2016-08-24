@@ -26,17 +26,45 @@
   </head>
 
   <body ng-app="leagueApp" ng-controller="AppCtrl" ng-cloak>
-    <md-toolbar class="md-hue-2">
-      <div class="md-toolbar-tools">
-        <md-button class="md-icon-button" aria-label="Settings" ng-click="toggleLeft()">
-          <md-icon>menu</md-icon>
-        </md-button>
-        <h2>
-          <span>Chamberlain League</span>
-        </h2>
-        <span flex></span>
-      </div>
-    </md-toolbar>
+    <section layout="column" flex>
+      <md-toolbar class="md-hue-2">
+        <div class="md-toolbar-tools">
+          <md-button class="md-icon-button" aria-label="Settings" ng-click="toggleLeft()">
+            <md-icon>menu</md-icon>
+          </md-button>
+          <h2>
+            <span>Chamberlain League</span>
+          </h2>
+          <span flex></span>
+          <section layout="row">
+            <section layout="column">
+              <span flex></span>
+              <div id="toolbarTeamIcon" ng-style="{'background-image': 'url('+user.team_logo+')'}"></div>
+              <span flex></span>
+            </section>
+            <h4>
+              <span>{{user.team_name}}</span>
+            </h4>
+          </section>
+        </div>
+      </md-toolbar>
+      <section id="content" layout="column" flex>
+        <div id="progress" class="overlay" ng-hide="activated" layout="column">
+          <span flex></span>
+          <md-progress-circular class="md-accent" ng-disabled="!activated" md-diameter="96"></md-progress-circular>
+          <span flex></span>
+        </div>
+        <div id="login" class="overlay" ng-show="activated && !user.loggedIn" layout="column">
+          <span flex></span>
+          <div style="margin:auto;">
+            <md-button class="md-primary" go-click="/login">
+              LOGIN
+            </md-button>
+          </div>
+          <span flex></span>
+        </div>
+      </section>
+    </section>
     <section layout="row" flex>
       <md-sidenav
           class="md-sidenav-left"
@@ -44,17 +72,13 @@
           md-whiteframe="4">
         <md-content layout-padding>
           <md-list ng-cloak>
-            <md-list-item class="secondary-button-padding" go-click="/logout">
-              <p>LOGOUT</p>
+            <md-list-item ng-click="console.log('logout')" go-click="/logout">
+              LOGOUT
             </md-list-item>
           </md-list>
         </md-content>
       </md-sidenav>
     </section>
-
-    <md-button class="md-raised" go-click="/login">
-      LOGIN
-    </md-button>
 
 
     <script src="../vendor/angular/angular.js"></script>

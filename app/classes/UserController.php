@@ -36,6 +36,11 @@ class UserController
         return \User::find($yid);
     }
 
+    public function getPublicUserInfo( $yid )
+    {
+        return \User::select('team_name', 'team_key', 'team_logo')->where('yid', '=', $yid)->first();
+    }
+
     public function updateUser ( $yid, $token, $info )
     {
         $this->logger->addInfo("creating..." . $yid);

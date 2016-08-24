@@ -92,9 +92,10 @@ $app->get('/logout', function (Request $request, Response $response) {
 
 $app->group('/data', function() use ($app) {
 	$app->get('/user', '\RestfulDataController:user');
+	$app->get('/game', '\RestfulDataController:game');
 })->add(function ($request, $response, $next)
 {
-	$loggedOutResponse = $response->withJson(array("loggedin" => false));
+	$loggedOutResponse = $response->withJson(array("user" => array ( "loggedIn" => false )));
 
 	if(empty($_SESSION['yid']))
     {
@@ -108,7 +109,7 @@ $app->group('/data', function() use ($app) {
     }
 
     $token = $user->access_token;
-    $this->logger->addInfo('Remaining time until token expires: ' . time() - $user->token_expiration);
+    $this->logger->addInfo('Remaining time until token expires: ' . strval( $user->token_expiration - time() ) );
     if(time() > $user->token_expiration)
     {
     	$token = $this->provider->getAccessToken('refresh_token', [

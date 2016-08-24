@@ -1,0 +1,16 @@
+#toolbarTeamIcon {
+	width: 55px;
+	height: 55px;
+	background-size: contain;
+}
+
+.overlay {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background: white;
+}
+
+#progress md-progress-circular {
+	margin: auto;
+}

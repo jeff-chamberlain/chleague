@@ -10,10 +10,20 @@ class RestfulDataController
 	}
 
 	public function user ( $request, $response, $args ) {
-    	$data = array(
-    		"loggedin" => true,
-    		"user" => $this->container->get('users')->getUser($_SESSION['yid'])
+		$user = $this->container->get('users')->getPublicUserInfo($_SESSION['yid']);
+		$user['loggedIn'] = true;
+		return $response->withJson($user);
+   }
+
+   public function game ( $request, $response, $args ) {
+   		$game = array(
+   			"type" => $this->container->get('settings')['config']['game']['type'],
 		);
-		return $response->withJson($data);
+
+   		if ( $game['type'] == "draft" )
+   		{
+   			$game['data'] = \Drafter::orderBy('team_key', 'desc')->get();
+   		}
+   		return $response->withJson($game);
    }
 }
