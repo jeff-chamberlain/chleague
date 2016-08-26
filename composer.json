@@ -9,9 +9,9 @@
         "fxp/composer-asset-plugin": "^1.2",
         "npm-asset/angular-material": "^1.0",
         "illuminate/database": "~5.1",
-        "npm-asset/angular": "^1.5",
-        "npm-asset/angular-animate": "^1.5",
-        "npm-asset/angular-aria": "^1.5"
+        "npm-asset/angular": ">1.0.0",
+        "npm-asset/angular-animate": ">1.0.0",
+        "npm-asset/angular-aria": ">1.0.0"
     },
     "extra": {
       "asset-installer-paths": {

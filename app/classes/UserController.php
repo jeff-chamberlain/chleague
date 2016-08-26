@@ -41,6 +41,11 @@ class UserController
         return \User::select('team_name', 'team_key', 'team_logo')->where('yid', '=', $yid)->first();
     }
 
+    public function getAllUsersPublicInfo ()
+    {
+        return \User::select('team_name', 'team_key', 'team_logo')->orderBy('team_key', 'desc')->get();
+    }
+
     public function updateUser ( $yid, $token, $info )
     {
         $this->logger->addInfo("creating..." . $yid);
@@ -66,5 +71,14 @@ class UserController
             $this->logger->addError($e->getMessage());
             echo $e->getMessage();   // insert query
         }
+    }
+
+    public function refreshUserToken ( $yid, $token )
+    {
+        return \User::where('yid', $yid)->update([
+            'access_token' => $token->getToken(),
+            'refresh_token' => $token->getRefreshToken(),
+            'token_expiration' => $token->getExpires()
+        ]);
     }
 }

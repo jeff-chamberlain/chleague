@@ -93,6 +93,28 @@ $app->get('/logout', function (Request $request, Response $response) {
 $app->group('/data', function() use ($app) {
 	$app->get('/user', '\RestfulDataController:user');
 	$app->get('/game', '\RestfulDataController:game');
+	$app->post('/input/draft', function( $request, $response ) {
+		$parsedBody = $request->getParsedBody();
+		$this->logger->addInfo(print_r($parsedBody, true));
+		if ( isset($parsedBody['input']) )
+		{
+			$user = $this->users->getUser($_SESSION['yid']);
+			$this->logger->addInfo(intval($parsedBody['input']));
+			$drafter = \Drafter::where('team_key', $user['team_key']);
+			$this->logger->addInfo("EAGLE");
+			try {
+				$drafter->update(['draft_pick' => intval($parsedBody['input'])]);
+			}
+			catch (Exception $e) {
+				$this->logger->addError($e->getMessage());
+			}
+			$this->logger->addInfo("3");
+		}
+		else
+		{
+			$this->logger->addError("User tried to submit without any input!");
+		}
+	});
 })->add(function ($request, $response, $next)
 {
 	$loggedOutResponse = $response->withJson(array("user" => array ( "loggedIn" => false )));
@@ -115,6 +137,7 @@ $app->group('/data', function() use ($app) {
     	$token = $this->provider->getAccessToken('refresh_token', [
     		"refresh_token" => $user->refresh_token	
 		]);
+		$this->users->refreshUserToken($_SESSION['yid'], $token);
     }
 
     if(!isset($token))

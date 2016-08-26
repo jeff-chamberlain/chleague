@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6c1ade08afaaa7b7e531d71fc74f25b8",
-    "content-hash": "ed8c82c915a9ee517a34dcc99d832802",
+    "hash": "be102d57bf6404dac93fbee7b324dca2",
+    "content-hash": "31502d55ff5a182bab1daea910ef115a",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -1039,12 +1039,12 @@
         },
         {
             "name": "npm-asset/angular-material",
-            "version": "1.0.9",
+            "version": "1.1.0",
             "dist": {
                 "type": "tar",
-                "url": "https://registry.npmjs.org/angular-material/-/angular-material-1.0.9.tgz",
+                "url": "https://registry.npmjs.org/angular-material/-/angular-material-1.1.0.tgz",
                 "reference": null,
-                "shasum": "00e816f6381ffd164bc7e56dcf56549f0ff64d6c"
+                "shasum": "09062ed64e6f257f62f194b06a06c8b95fcb2b65"
             },
             "type": "npm-asset-library",
             "extra": {
@@ -1066,58 +1066,6 @@
                 "browser",
                 "client-side",
                 "material"
-            ]
-        },
-        {
-            "name": "npm-asset/material-design-icons",
-            "version": "2.2.3",
-            "dist": {
-                "type": "tar",
-                "url": "https://registry.npmjs.org/material-design-icons/-/material-design-icons-2.2.3.tgz",
-                "reference": null,
-                "shasum": "b6817364a7803b0509a8002305b7fe201b0fda9f"
-            },
-            "require-dev": {
-                "npm-asset/babel-core": ">=6.1.2,<7.0.0",
-                "npm-asset/babel-preset-es2015": ">=6.1.2,<7.0.0",
-                "npm-asset/gulp": ">=3.9.0,<4.0.0",
-                "npm-asset/gulp-if": ">=2.0.0,<3.0.0",
-                "npm-asset/gulp-svg-sprite": ">=1.2.14,<2.0.0",
-                "npm-asset/lodash": ">=3.10.1,<4.0.0",
-                "npm-asset/sprity": ">=1.0.8,<2.0.0",
-                "npm-asset/sprity-gm": ">=1.0.2,<2.0.0",
-                "npm-asset/through2": ">=2.0.0,<3.0.0",
-                "npm-asset/underscore.string": ">=3.2.2,<4.0.0",
-                "npm-asset/vinyl": ">=1.1.0,<2.0.0"
-            },
-            "type": "npm-asset-library",
-            "extra": {
-                "npm-asset-bugs": {
-                    "url": "https://github.com/google/material-design-icons/issues"
-                },
-                "npm-asset-main": "index.js",
-                "npm-asset-directories": [],
-                "npm-asset-repository": {
-                    "type": "git",
-                    "url": "git+https://github.com/google/material-design-icons.git"
-                },
-                "npm-asset-scripts": []
-            },
-            "license": [
-                "CC-BY-4.0"
-            ],
-            "authors": [
-                {
-                    "name": "Material Design Authors"
-                }
-            ],
-            "description": "Material Design icons by Google",
-            "homepage": "https://github.com/google/material-design-icons",
-            "keywords": [
-                "google",
-                "icons",
-                "material",
-                "material-design"
             ]
         },
         {

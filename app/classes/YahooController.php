@@ -29,10 +29,26 @@ class YahooController
 		$json = json_encode($ob);
 		$responseArray = json_decode($json, true);
 		$teamsArray = $responseArray['users']['user']['games']['game']['teams']['team'];
-		$leagueTeam = reset(array_filter($teamsArray, function($team)
+		$this->logger->addInfo(print_r($teamsArray, true));
+		if(isset($teamsArray[0]))
 		{
-			return strlen(strstr($team['team_key'], $this->config['league_id'])) > 0;
-		}));
+			$leagueTeam = reset(array_filter($teamsArray, function($team)
+			{
+				if ( isset($team['team_key']))
+				{
+					return strlen(strstr($team['team_key'], $this->config['league_id'])) > 0;
+				}
+				else
+				{
+					return false;
+				}
+			}));
+		}
+		else if (strlen(strstr($teamsArray['team_key'], $this->config['league_id'])) > 0)
+		{
+			$leagueTeam = $teamsArray;
+		}
+		
 
 		return array(
 			"team_key" => $leagueTeam['team_key'],

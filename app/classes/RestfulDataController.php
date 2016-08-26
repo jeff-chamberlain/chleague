@@ -18,11 +18,12 @@ class RestfulDataController
    public function game ( $request, $response, $args ) {
    		$game = array(
    			"type" => $this->container->get('settings')['config']['game']['type'],
+   			"players" => $this->container->get('users')->getAllUsersPublicInfo()
 		);
 
    		if ( $game['type'] == "draft" )
    		{
-   			$game['data'] = \Drafter::orderBy('team_key', 'desc')->get();
+   			$game['game_data'] = \Drafter::all();
    		}
    		return $response->withJson($game);
    }
