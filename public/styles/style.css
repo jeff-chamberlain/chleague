@@ -2,6 +2,7 @@
 	width: 55px;
 	height: 55px;
 	background-size: contain;
+	margin-right: 10px;
 }
 
 .overlay {
@@ -23,14 +24,33 @@ form > div {
 	text-align: center;
 }
 
-#draftChoice {
+#dataHeader {
 	margin: auto;
+	text-align: center;
 }
 
 .draft_icon {
 	height: 50px;
 	width: 50px;
 	margin: 10px;
+}
+.player_icon {
+	margin: 10px;
+}
+
+.player_select {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background :rgba(100,255,218,.5);
+	opacity : 0;
+	-webkit-transition: opacity .25s ease;
+}
+
+.player_select:hover {
+	opacity: 0.25;
 }
 
 .animate-if.ng-enter, .animate-if.ng-leave {

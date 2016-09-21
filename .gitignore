@@ -1,5 +1,5 @@
 vendor/*
-app/vendor
+protected/vendor
 public/vendor
 *.ini
 *.log

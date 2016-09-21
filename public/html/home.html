@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-    <link rel="shortcut icon" type="image/png" href="img/favicon.png" />
+    <link rel="shortcut icon" type="image/png" href="img/favicon.ico" />
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
     <link rel="stylesheet" href="../vendor/angular-material/angular-material.min.css"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -63,47 +63,39 @@
           </div>
           <span flex></span>
         </div>
-        <div id="draft" ng-show="activated && user.loggedIn" layout="column" flex>
-          <div id="draftChoice" ng-show="game_data.userChoice === game_data.currentChoice">
-            <form name="userForm" layout="column" ng-submit="submit()">
-              <h2>Please select your draft pick</h2>
-              <md-input-container>
-                <label>Draft Pick</label>
-                <md-select name="choice" ng-model="choice_input" required>
-                  <span ng-repeat="drafter in game_data.currentDraft track by $index">
-                    <md-option value="{{$index + 1}}" ng-disabled="drafter">
-                      {{$index + 1}}
-                    </md-option>
-                  </span>
-                </md-select>
-                <!-- <div ng-messages="userForm.choice.$error">
-                  <div ng-message="required">This is required.</div>
-                </div> -->
-              </md-input-container>
+        <div id="survivor" ng-show="activated && user.loggedIn" layout="column" flex>
+          <div id="dataHeader">
+            <form ng-show="game_data.selected_player" ng-submit="submit()">
+              <h2>Current Survivor</h2>
+              <span layout="row" style="align-items: center;">
+                <h3>{{game_data.selected_player.display_position}}</h3>
+                <img class="player_icon" ng-src="{{game_data.selected_player.headshot.url}}" />
+                <h4>{{game_data.selected_player.name.full}}, {{game_data.selected_player.editorial_team_full_name}}</h4>
+              </span>
               <div>
-                <md-button type="submit" ng-disabled="submitting || game_data.userChoice !== game_data.currentChoice" ng-hide="submitting">Submit</md-button>
+                <md-button type="submit" ng-disabled="submitting || !choice_input" ng-hide="submitting">Submit</md-button>
                 <md-progress-circular class="md-accent" ng-show="submitting" md-diameter="20"></md-progress-circular>
               </div>
             </form>
+            <h2 ng-hide="game_data.selected_player" style="color:red;">Please select your survivor for this week</h2>
           </div>
-          <h2 ng-show="game_data.userChoice && game_data.userChoice > game_data.currentChoice">You will be #{{game_data.userChoice}} to select your draft pick</h2>
-          <h2 ng-hide="game_data.userChoice" style="color:red;">You have not yet completed the requirements to choose your draft pick!</h2>
           <md-list ng-cloak>
-          <md-subheader class="md-no-sticky">Current Draft</md-subheader>
-          <md-divider></md-divider>
-            <span ng-repeat="drafter in game_data.currentDraft track by $index">
-              <md-list-item>
-                <h2>{{$index + 1}}</h2>
-                <span ng-if="drafter" layout="row" style="align-items: center;">
-                  <img class="draft_icon" ng-src="{{$parent.players[drafter].team_logo}}" />
-                  <div class="md-list-item-text">
-                    <h3> {{$parent.players[drafter].team_name}} </h3>
-                  </div>
-                </span>
-              </md-list-item>
-              <md-divider></md-divider>
-            </span>
-          </md-list>
+            <md-subheader class="md-no-sticky">Your Eligible Roster</md-subheader>
+            <md-divider></md-divider>
+              <span ng-repeat="player in game_data.roster">
+                <md-list-item>
+                  <div class="player_select" ng-click="selectPlayer(player)"></div>
+                  <h2>{{player.display_position}}</h2>
+                  <span layout="row" style="align-items: center;">
+                    <img class="player_icon" ng-src="{{player.headshot.url}}" />
+                    <div class="md-list-item-text">
+                      <h3>{{player.name.full}} - <i>{{player.editorial_team_abbr}}</i></h3>
+                    </div>
+                  </span>
+                </md-list-item>
+                <md-divider></md-divider>
+              </span>
+            </md-list>
         </div>
       </md-content>
     </section>

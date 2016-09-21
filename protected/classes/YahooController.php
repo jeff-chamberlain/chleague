@@ -29,14 +29,14 @@ class YahooController
 		$json = json_encode($ob);
 		$responseArray = json_decode($json, true);
 		$teamsArray = $responseArray['users']['user']['games']['game']['teams']['team'];
-		$this->logger->addInfo(print_r($teamsArray, true));
+		
 		if(isset($teamsArray[0]))
 		{
 			$leagueTeam = reset(array_filter($teamsArray, function($team)
 			{
 				if ( isset($team['team_key']))
 				{
-					return strlen(strstr($team['team_key'], $this->config['league_id'])) > 0;
+					return strlen(strstr($team['team_key'], $this->config['league']['league_id'])) > 0;
 				}
 				else
 				{
@@ -44,7 +44,7 @@ class YahooController
 				}
 			}));
 		}
-		else if (strlen(strstr($teamsArray['team_key'], $this->config['league_id'])) > 0)
+		else if (strlen(strstr($teamsArray['team_key'], $this->config['league']['league_id'])) > 0)
 		{
 			$leagueTeam = $teamsArray;
 		}
@@ -55,5 +55,23 @@ class YahooController
 			"team_name" => $leagueTeam['name'],
 			"team_logo" => $leagueTeam['team_logos']['team_logo']['url']
 		);
+	}
+
+	public function getPlayableTeamPlayers ( $token, $teamKey )
+	{
+		$request  = $this->provider->getAuthenticatedRequest(
+			'GET',
+			self::BASE_URI . 'team/' . $teamKey . '/roster;week=' . getNFLWeek(),
+			$token
+		);
+		$response = $this->provider->getResponse($request);
+		$ob = simplexml_load_string($response);
+		$json = json_encode($ob);
+		$responseArray = json_decode($json, true);
+		$this->logger->addInfo( 'WEEK ' . getNFLWeek());
+		return array_filter($responseArray['team']['roster']['players']['player'], function($player)
+			{
+				return $player['is_editable'];
+			});
 	}
 }

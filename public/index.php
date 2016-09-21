@@ -2,15 +2,15 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-require '../app/vendor/autoload.php';
+require '../protected/vendor/autoload.php';
 session_start();
 
 spl_autoload_register(function ($classname) {
-    require ("../app/classes/" . $classname . ".php");
+    require ("../protected/classes/" . $classname . ".php");
 });
 
 
-$settings = include('../app/config/settings.php');
+$settings = include('../protected/config/settings.php');
 $app = new \Slim\App($settings);
 
 $capsule = new \Illuminate\Database\Capsule\Manager;
@@ -18,14 +18,31 @@ $capsule->addConnection($settings['settings']['db']);
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-require '../app/lib/dependencies.php';
+require '../protected/lib/dependencies.php';
+
+function getNFLWeek()
+{
+	if ($settings['config']['dev']['in_dev_mode'])
+	{
+		return $settings['config']['dev']['dev_week'];
+	}
+	else
+	{
+		date_default_timezone_set('America/New_York');
+		$startDate = new DateTime('2016-09-06 00:00:00');
+		$interval = $startDate->diff(new DateTime());
+		$days = (int)$interval->format('%a');
+		return floor($days / 7) + 1;
+	}
+}
 
 $app->get('/authcallback', function (Request $request, Response $response) {
+	$this->logger->addInfo('Returned new user');
     $params = $request->getQueryParams();
     if (!empty($params['error'])) {
 
 	    // Got an error, probably user denied access
-	    $this->logger->addInfo('Got error: ' . $_GET['error']);
+	    $this->logger->addInfo('Got error: ' . $params['error']);
 
 	} elseif (empty($params['code'])) {
 
@@ -50,7 +67,6 @@ $app->get('/authcallback', function (Request $request, Response $response) {
 	        // We got an access token, let's now get the owner details
 	        $ownerDetails = $this->provider->getResourceOwner($token);
 	        $userInfo = $this->yahoo->getUserInfo($token->getToken());
-	        print_r($userInfo);
 	        $this->logger->addInfo('So far');
 
 	        $this->users->updateUser(
@@ -99,16 +115,34 @@ $app->group('/data', function() use ($app) {
 		if ( isset($parsedBody['input']) )
 		{
 			$user = $this->users->getUser($_SESSION['yid']);
-			$this->logger->addInfo(intval($parsedBody['input']));
 			$drafter = \Drafter::where('team_key', $user['team_key']);
-			$this->logger->addInfo("EAGLE");
+
 			try {
 				$drafter->update(['draft_pick' => intval($parsedBody['input'])]);
 			}
 			catch (Exception $e) {
 				$this->logger->addError($e->getMessage());
 			}
-			$this->logger->addInfo("3");
+		}
+		else
+		{
+			$this->logger->addError("User tried to submit without any input!");
+		}
+	});
+	$app->post('/input/survivor', function( $request, $response ) {
+		$parsedBody = $request->getParsedBody();
+		$this->logger->addInfo(print_r($parsedBody, true));
+		if ( isset($parsedBody['input']) )
+		{
+			$user = $this->users->getUser($_SESSION['yid']);
+			$survivor = \Survivor::where('team_key', $user['team_key']);
+
+			try {
+				$survivor->update(['week' . getNFLWeek() => $parsedBody['input']]);
+			}
+			catch (Exception $e) {
+				$this->logger->addError($e->getMessage());
+			}
 		}
 		else
 		{

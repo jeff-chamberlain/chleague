@@ -15,12 +15,20 @@ angular.module('leagueApp', ['ngMaterial'])
 			$mdSidenav('left').toggle();
 		};
 
+		$scope.selectPlayer = function(player) {
+			if ( !$scope.game_data.selected_player || player.player_key !== $scope.game_data.selected_player.player_key )
+			{
+				$scope.game_data.selected_player = player;
+				$scope.choice_input = player.player_key;
+			}
+		};
+
 		$scope.submit = function() {
 			var inputData = {'input': $scope.choice_input};
 			console.log(inputData);
 			$scope.submitting = true;
 
-			$http.post('/data/input/draft', inputData).finally(function() {
+			$http.post('/data/input/survivor', inputData).finally(function() {
 				$window.location.reload(true);
 			});
 		}
@@ -40,30 +48,16 @@ angular.module('leagueApp', ['ngMaterial'])
 			return $http.get('/data/game').then(function successCallback(response)
 			{
 				console.log('SUCCESS', response);
-				response.data.players.forEach(function(player) {
-					$scope.players[player.team_key] = player;
-				});
-
-				$scope.game_data.currentChoice = 1;
-				$scope.game_data.userChoice = null;
-				$scope.game_data.currentDraft = [];
-				$scope.game_data.currentDraft.length = response.data.game_data.length;
-				response.data.game_data.forEach(function(drafter) {
-					if( drafter.draft_pick != null )
-					{
-						$scope.game_data.currentDraft[drafter.draft_pick - 1] = drafter.team_key;
-						if( drafter.draft_choice >= $scope.game_data.currentChoice )
+				$scope.game_data.roster = response.data.players;
+				if ( response.data.selected_player != null )
+				{
+					$scope.game_data.roster.forEach(function(player) {
+						if ( player.player_key === response.data.selected_player )
 						{
-							$scope.game_data.currentChoice = drafter.draft_choice + 1;
+							$scope.game_data.selected_player = player;
 						}
-					}
-
-					if (drafter.team_key === $scope.user.team_key)
-					{
-						$scope.game_data.userChoice = drafter.draft_choice;
-					}
-				});
-				console.log($scope.game_data.currentDraft);
+					});
+				}
 			}, function errorCallback (response)
 			{
 				console.log('ERROR', response);

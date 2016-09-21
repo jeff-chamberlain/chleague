@@ -12,7 +12,7 @@ $container['provider'] = function($c) {
 
 $container['logger'] = function($c) {
     $logger = new \Monolog\Logger('my_logger');
-    $file_handler = new \Monolog\Handler\StreamHandler("../../logs/app.log");
+    $file_handler = new \Monolog\Handler\StreamHandler("../protected/logs/app.log");
     $logger->pushHandler($file_handler);
     return $logger;
 };
@@ -27,7 +27,7 @@ $container['yahoo'] = function ($container)
     $yahoo = new \YahooController (
         $container->get('logger'),
         $container->get('provider'),
-        $container->get('settings')['config']['league']
+        $container->get('settings')['config']
     );
     return $yahoo;
 };
