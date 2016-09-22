@@ -57,7 +57,7 @@ class YahooController
 		);
 	}
 
-	public function getPlayableTeamPlayers ( $token, $teamKey )
+	public function getTeamPlayers ( $token, $teamKey )
 	{
 		$request  = $this->provider->getAuthenticatedRequest(
 			'GET',
@@ -68,10 +68,10 @@ class YahooController
 		$ob = simplexml_load_string($response);
 		$json = json_encode($ob);
 		$responseArray = json_decode($json, true);
-		$this->logger->addInfo( 'WEEK ' . getNFLWeek());
-		return array_filter($responseArray['team']['roster']['players']['player'], function($player)
-			{
-				return $player['is_editable'];
-			});
+		return $responseArray['team']['roster']['players']['player'];
+		// return array_filter($responseArray['team']['roster']['players']['player'], function($player)
+		// 	{
+		// 		return $player['is_editable'];
+		// 	});
 	}
 }
