@@ -73,13 +73,13 @@
                 <h4>{{game_data.selected_player.name.full}}, {{game_data.selected_player.editorial_team_full_name}}</h4>
               </span>
               <div>
-                <md-button type="submit" ng-disabled="submitting || !choice_input || ( game_data.selected_player && !game_data.selected_player.is_editable)" ng-hide="submitting">Submit</md-button>
+                <md-button type="submit" ng-disabled="submitting || !choice_input || ( game_data.selected_player && game_data.selected_player.is_editable == 0)" ng-hide="submitting">Submit</md-button>
                 <md-progress-circular class="md-accent" ng-show="submitting" md-diameter="20"></md-progress-circular>
               </div>
             </form>
             <h2 ng-hide="game_data.selected_player" style="color:red;">Please select your survivor for this week</h2>
           </div>
-          <md-list ng-cloak ng-hide="game_data.selected_player && !game_data.selected_player.is_editable">
+          <md-list ng-cloak ng-hide="game_data.selected_player && game_data.selected_player.is_editable == 0">
             <md-subheader class="md-no-sticky">Your Eligible Roster</md-subheader>
             <md-divider></md-divider>
               <span ng-repeat="player in game_data.roster">

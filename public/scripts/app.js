@@ -35,7 +35,7 @@ angular.module('leagueApp', ['ngMaterial'])
 
 		$http.get('/data/user').then(function successCallback(response)
 		{
-			console.log('SUCCESS', response);
+			console.log('USER', response);
 			$scope.user = response.data;
 		}, function errorCallback (response)
 		{
@@ -47,9 +47,9 @@ angular.module('leagueApp', ['ngMaterial'])
 			}
 			return $http.get('/data/game').then(function successCallback(response)
 			{
-				console.log('SUCCESS', response);
+				console.log('GAME', response);
 				$scope.game_data.roster = response.data.players;
-				if ( response.data.selected_player != null )
+				if ( response.data.selected_player )
 				{
 					$scope.game_data.roster.forEach(function(player) {
 						if ( player.player_key === response.data.selected_player )

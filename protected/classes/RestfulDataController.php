@@ -28,15 +28,26 @@ class RestfulDataController
       else if ( $game['type'] == "survivor" )
       {
          $user = $this->container->get('users')->getPublicUserInfo($_SESSION['yid']);
-         $game['players'] = $this->container->get('yahoo')->getTeamPlayers( $request->getAttribute('token'),
+         $possiblePlayers = $this->container->get('yahoo')->getTeamPlayers( $request->getAttribute('token'),
             $user['team_key']);
-         $game['selected_player'] = \Survivor::select('week' . getNFLWeek())->where('team_key', '=', $user['team_key'])->first()['week' . getNFLWeek()];
-         if (isset($game['selected_player']))
+
+         $game['players'] = array_values(array_filter($possiblePlayers, function($player)
          {
-            $selectedPlayer = reset(array_filter($game['players'], function($player)
+            return $player['is_editable'];
+         }));
+
+         $selectedPlayerKey = \Survivor::select('week' . getNFLWeek())->where('team_key', '=', $user['team_key'])->first()['week' . getNFLWeek()];
+
+         if (isset($selectedPlayerKey))
+         {
+            $game['selected_player'] = $selectedPlayerKey;
+            $this->container->logger->addInfo('PRE: ' . $selectedPlayerKey);
+
+            $selectedPlayer = reset(array_filter($possiblePlayers, function($possiblePlayer) use ($selectedPlayerKey)
             {
-               return $player['team_key'] == $game['selected_player'];
+               return $possiblePlayer['player_key'] === $selectedPlayerKey;
             }));
+
             if(isset($selectedPlayer) && !$selectedPlayer['is_editable'])
             {
                $game['players'] = array($selectedPlayer);
