@@ -20,11 +20,11 @@ $capsule->bootEloquent();
 
 require '../protected/lib/dependencies.php';
 
-function getNFLWeek()
+function getNFLWeek($config)
 {
-	if ($settings['config']['dev']['in_dev_mode'])
+	if ($config['dev']['in_dev_mode'])
 	{
-		return $settings['config']['dev']['dev_week'];
+		return $config['dev']['dev_week'];
 	}
 	else
 	{

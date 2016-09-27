@@ -61,7 +61,7 @@ class YahooController
 	{
 		$request  = $this->provider->getAuthenticatedRequest(
 			'GET',
-			self::BASE_URI . 'team/' . $teamKey . '/roster;week=' . getNFLWeek(),
+			self::BASE_URI . 'team/' . $teamKey . '/roster;week=' . getNFLWeek($this->config),
 			$token
 		);
 		$response = $this->provider->getResponse($request);

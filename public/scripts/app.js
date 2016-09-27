@@ -49,6 +49,7 @@ angular.module('leagueApp', ['ngMaterial'])
 			{
 				console.log('GAME', response);
 				$scope.game_data.roster = response.data.players;
+				$scope.game_data.eliminated = response.data.eliminated;
 				if ( response.data.selected_player )
 				{
 					$scope.game_data.roster.forEach(function(player) {

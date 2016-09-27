@@ -30,27 +30,34 @@ class RestfulDataController
          $user = $this->container->get('users')->getPublicUserInfo($_SESSION['yid']);
          $possiblePlayers = $this->container->get('yahoo')->getTeamPlayers( $request->getAttribute('token'),
             $user['team_key']);
+         $game['eliminated'] = \Survivor::select('eliminated')->where('team_key', '=', $user['team_key'])->first()['eliminated'];
 
-         $game['players'] = array_values(array_filter($possiblePlayers, function($player)
+         if(!$game['eliminated'])
          {
-            return $player['is_editable'];
-         }));
+            $chosenPlayers = \Survivor::select('week3', 'week4', 'week5', 'week6')->where('team_key', '=', $user['team_key'])->first();
+            
+            $chosenPlayerKeys = array( $chosenPlayers['week3'], $chosenPlayers['week4'], $chosenPlayers['week5'], $chosenPlayers['week6']);
 
-         $selectedPlayerKey = \Survivor::select('week' . getNFLWeek())->where('team_key', '=', $user['team_key'])->first()['week' . getNFLWeek()];
-
-         if (isset($selectedPlayerKey))
-         {
-            $game['selected_player'] = $selectedPlayerKey;
-            $this->container->logger->addInfo('PRE: ' . $selectedPlayerKey);
-
-            $selectedPlayer = reset(array_filter($possiblePlayers, function($possiblePlayer) use ($selectedPlayerKey)
+            $game['players'] = array_values(array_filter($possiblePlayers, function($player) use ($chosenPlayerKeys)
             {
-               return $possiblePlayer['player_key'] === $selectedPlayerKey;
+               return $player['is_editable'] && !in_array($player['player_key'], $chosenPlayerKeys);
             }));
 
-            if(isset($selectedPlayer) && !$selectedPlayer['is_editable'])
+            $selectedPlayerKey = $chosenPlayers['week' . getNFLWeek($this->container->get('settings')['config'])];
+
+            if (isset($selectedPlayerKey))
             {
-               $game['players'] = array($selectedPlayer);
+               $game['selected_player'] = $selectedPlayerKey;
+
+               $selectedPlayer = reset(array_filter($possiblePlayers, function($possiblePlayer) use ($selectedPlayerKey)
+               {
+                  return $possiblePlayer['player_key'] === $selectedPlayerKey;
+               }));
+
+               if(isset($selectedPlayer) && !$selectedPlayer['is_editable'])
+               {
+                  $game['players'] = array($selectedPlayer);
+               }
             }
          }
       }
