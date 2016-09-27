@@ -36,7 +36,12 @@ class RestfulDataController
          {
             $chosenPlayers = \Survivor::select('week3', 'week4', 'week5', 'week6')->where('team_key', '=', $user['team_key'])->first();
             
-            $chosenPlayerKeys = array( $chosenPlayers['week3'], $chosenPlayers['week4'], $chosenPlayers['week5'], $chosenPlayers['week6']);
+            $chosenPlayerKeys = array();
+
+            for( $i = 3; $i < getNFLWeek($this->container->get('settings')['config']); $i++)
+            {
+               $chosenPlayerKeys = $chosenPlayers['week' . $i];
+            }
 
             $game['players'] = array_values(array_filter($possiblePlayers, function($player) use ($chosenPlayerKeys)
             {
