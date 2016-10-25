@@ -24,7 +24,7 @@ function getNFLWeek($config)
 {
 	if ($config['dev']['in_dev_mode'])
 	{
-		return $config['dev']['dev_week'];
+		return intval($config['dev']['dev_week']);
 	}
 	else
 	{
@@ -138,7 +138,26 @@ $app->group('/data', function() use ($app) {
 			$survivor = \Survivor::where('team_key', $user['team_key']);
 
 			try {
-				$survivor->update(['week' . getNFLWeek() => $parsedBody['input']]);
+				$survivor->update(['week' . getNFLWeek($this['settings']['config']) => $parsedBody['input']]);
+			}
+			catch (Exception $e) {
+				$this->logger->addError($e->getMessage());
+			}
+		}
+		else
+		{
+			$this->logger->addError("User tried to submit without any input!");
+		}
+	});
+	$app->post('/input/tournament', function( $request, $response ) {
+		$parsedBody = $request->getParsedBody();
+		$this->logger->addInfo(print_r($parsedBody, true));
+		if ( isset($parsedBody['input']) )
+		{
+			$user = $this->users->getUser($_SESSION['yid']);
+			$tourneyteam = \Tourneyteam::where('team_key', $user['team_key']);
+			try {
+				$tourneyteam->update(['week' . getNFLWeek($this['settings']['config']) => $parsedBody['input']]);
 			}
 			catch (Exception $e) {
 				$this->logger->addError($e->getMessage());

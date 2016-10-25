@@ -28,7 +28,7 @@ angular.module('leagueApp', ['ngMaterial'])
 			console.log(inputData);
 			$scope.submitting = true;
 
-			$http.post('/data/input/survivor', inputData).finally(function() {
+			$http.post('/data/input/tournament', inputData).finally(function() {
 				$window.location.reload(true);
 			});
 		}

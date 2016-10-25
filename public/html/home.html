@@ -68,7 +68,7 @@
             <h2 ng-show="game_data.eliminated">You have been eliminated from the tournament</h2>
             <div ng-hide="game_data.eliminated">
               <form ng-show="game_data.selected_player" ng-submit="submit()">
-                <h2>Current Survivor</h2>
+                <h2>Current Captain</h2>
                 <span layout="row" style="align-items: center;">
                   <h3>{{game_data.selected_player.display_position}}</h3>
                   <img class="player_icon" ng-src="{{game_data.selected_player.headshot.url}}" />
@@ -79,7 +79,7 @@
                   <md-progress-circular class="md-accent" ng-show="submitting" md-diameter="20"></md-progress-circular>
                 </div>
               </form>
-              <h2 ng-hide="game_data.selected_player" style="color:red;">Please select your survivor for this week</h2>
+              <h2 ng-hide="game_data.selected_player" style="color:red;">Please select your captain for this week</h2>
             </div>
           </div>
           <md-list ng-cloak ng-hide="game_data.eliminated || game_data.selected_player && game_data.selected_player.is_editable == 0">

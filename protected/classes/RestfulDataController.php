@@ -40,7 +40,7 @@ class RestfulDataController
 
             for( $i = 3; $i < getNFLWeek($this->container->get('settings')['config']); $i++)
             {
-               $chosenPlayerKeys = $chosenPlayers['week' . $i];
+               array_push($chosenPlayerKeys, $chosenPlayers['week' . $i]);
             }
 
             $game['players'] = array_values(array_filter($possiblePlayers, function($player) use ($chosenPlayerKeys)
@@ -51,6 +51,44 @@ class RestfulDataController
             $selectedPlayerKey = $chosenPlayers['week' . getNFLWeek($this->container->get('settings')['config'])];
 
             if (isset($selectedPlayerKey))
+            {
+               $game['selected_player'] = $selectedPlayerKey;
+
+               $selectedPlayer = reset(array_filter($possiblePlayers, function($possiblePlayer) use ($selectedPlayerKey)
+               {
+                  return $possiblePlayer['player_key'] === $selectedPlayerKey;
+               }));
+
+               if(isset($selectedPlayer) && !$selectedPlayer['is_editable'])
+               {
+                  $game['players'] = array($selectedPlayer);
+               }
+            }
+         }
+      }
+      else if ( $game['type'] == "tournament" )
+      {
+         $user = $this->container->get('users')->getPublicUserInfo($_SESSION['yid']);
+         $possiblePlayers = $this->container->get('yahoo')->getTeamPlayers( $request->getAttribute('token'),
+            $user['team_key']);
+         $tourneyTeam = \Tourneyteam::find($user['team_key']);
+         $game['eliminated'] = $tourneyTeam['eliminated'];
+
+         if(!$game['eliminated'])
+         {
+            $game['players'] = array_values(array_filter($possiblePlayers, function($player)
+            {
+               return $player['is_editable'] && $player['selected_position']['position'] !== 'BN';
+            }));
+
+            $selectedPlayerKey = $tourneyTeam['week' . ( getNFLWeek($this->container->get('settings')['config']))];
+
+            if (!isset($selectedPlayerKey))
+            {
+               $selectedPlayerKey = $tourneyTeam['week' . ( getNFLWeek($this->container->get('settings')['config']) - 1 )];
+            }
+
+            if(isset($selectedPlayerKey))
             {
                $game['selected_player'] = $selectedPlayerKey;
 
