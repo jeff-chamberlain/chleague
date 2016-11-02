@@ -106,4 +106,66 @@ class RestfulDataController
       }
 		return $response->withJson($game);
    }
+
+   public function results ( $request, $response, $args ) {
+      if ($_SESSION['yid'] != $this->container->get('settings')['config']['dev']['dev_yid'])
+      {
+         return $response->withJson(array());
+      };
+      $week = $args['week'];
+      $teams = \Tourneyteam::where('eliminated', '0')->get();
+      $teamIDs = array();
+      $playerIDs = array();
+      $results = array();
+
+      foreach ( $teams as $team )
+      {
+         $id = strval($team['team_key']);
+         array_push($teamIDs, $id);
+         $results[$id] = array(
+            "team" => [],
+            "captain" => []
+         );
+         if (isset($team['week' . $week]))
+         {
+            $playerID = $team['week' . $week];
+         }
+         else
+         {
+            $prevWeek = intval($week) - 1;
+            while( !isset($playerID) && array_key_exists('week' . $prevWeek, $team))
+            {
+               if ( isset($team['week' . $prevWeek]) )
+               {
+                  $playerID = $team['week' . $prevWeek];
+               }
+               else
+               {
+                  $prevWeek --;
+               }
+            }
+         }
+         if(isset($playerID))
+         {
+            $results[$id]['captain']['key'] = $playerID;
+            array_push($playerIDs, $playerID);
+            unset($playerID);
+         }
+      }
+
+      $teams = $this->container->get('yahoo')->getTeamPoints( $request->getAttribute('token'), $teamIDs, $week );
+      $captains = $this->container->get('yahoo')->getPlayerPoints( $request->getAttribute('token'), $teamIDs, $playerIDs, $week );
+
+      foreach ($results as $team_key => &$data) {
+         $data['team'] = $teams[$team_key];
+         if(isset($data['captain']['key']))
+         {
+            $data['captain'] = $captains[$data['captain']['key']];
+         }
+      }
+
+      $body = $response->getBody();
+      $body->write('<pre>' . json_encode($results, JSON_PRETTY_PRINT) . '</pre>');
+      return $response;
+   }
 }

@@ -109,6 +109,7 @@ $app->get('/logout', function (Request $request, Response $response) {
 $app->group('/data', function() use ($app) {
 	$app->get('/user', '\RestfulDataController:user');
 	$app->get('/game', '\RestfulDataController:game');
+	$app->get('/results/{week}', '\RestfulDataController:results');
 	$app->post('/input/draft', function( $request, $response ) {
 		$parsedBody = $request->getParsedBody();
 		$this->logger->addInfo(print_r($parsedBody, true));

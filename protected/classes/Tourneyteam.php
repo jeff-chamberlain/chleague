@@ -10,4 +10,6 @@ class Tourneyteam extends Model
      * @var string
      */
     protected $primaryKey = 'team_key';
+
+    public $incrementing = false;
 }

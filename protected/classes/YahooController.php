@@ -74,4 +74,48 @@ class YahooController
 		// 		return $player['is_editable'];
 		// 	});
 	}
+
+	public function getTeamPoints ( $token, $teams, $week )
+	{
+		$request  = $this->provider->getAuthenticatedRequest(
+			'GET',
+			self::BASE_URI . 'teams;team_keys=' . join(',', $teams) . '/stats;type=week;week=' . $week,
+			$token
+		);
+		$response = $this->provider->getResponse($request);
+		$ob = simplexml_load_string($response);
+		$json = json_encode($ob);
+		$responseArray = json_decode($json, true);
+		$teamsArray = [];
+		foreach ($responseArray['teams']['team'] as $teamData) {
+			$teamsArray[$teamData['team_key']] = array(
+				"name" => $teamData['name'],
+				"points" => $teamData['team_points']['total']
+			);
+		}
+		return $teamsArray;
+	}
+
+	public function getPlayerPoints ( $token, $teams, $players, $week )
+	{
+		$url = self::BASE_URI . 'league/' . $this->config['league']['league_id'] . '/players;player_keys=' . join(',', $players) . '/stats;type=week;week=' . $week;
+		$this->logger->addInfo($url);
+		$request  = $this->provider->getAuthenticatedRequest(
+			'GET',
+			$url,
+			$token
+		);
+		$response = $this->provider->getResponse($request);
+		$ob = simplexml_load_string($response);
+		$json = json_encode($ob);
+		$responseArray = json_decode($json, true);
+		$playersArray = [];
+		foreach ($responseArray['league']['players']['player'] as $playerData) {
+			$playersArray[$playerData['player_key']] = array(
+				"name" => $playerData['display_position'] . ' ' . $playerData['name']['full'] . ', ' . $playerData['editorial_team_abbr'],
+				"points" => $playerData['player_points']['total']
+			);
+		}
+		return $playersArray;
+	}
 }
