@@ -99,7 +99,6 @@ class YahooController
 	public function getPlayerPoints ( $token, $teams, $players, $week )
 	{
 		$url = self::BASE_URI . 'league/' . $this->config['league']['league_id'] . '/players;player_keys=' . join(',', $players) . '/stats;type=week;week=' . $week;
-		$this->logger->addInfo($url);
 		$request  = $this->provider->getAuthenticatedRequest(
 			'GET',
 			$url,

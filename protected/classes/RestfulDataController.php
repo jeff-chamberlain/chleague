@@ -133,7 +133,7 @@ class RestfulDataController
          else
          {
             $prevWeek = intval($week) - 1;
-            while( !isset($playerID) && array_key_exists('week' . $prevWeek, $team))
+            while( !isset($playerID) && $prevWeek > 7 )
             {
                if ( isset($team['week' . $prevWeek]) )
                {
